@@ -66,9 +66,6 @@ def processar_em_chunks(uploaded_file, coluna_resposta, chunk_size=100_000):
         return pd.concat(resultados, ignore_index=True)
     else:
         return pd.DataFrame()
-    
-
-
 
 # Streamlit App
 st.title("Classificador de Respostas de Clientes")
@@ -79,11 +76,12 @@ arquivos = st.file_uploader("Carregue os arquivos CSV", type="csv", accept_multi
 coluna_resposta = 'MENSAGEM'
 
 if arquivos:
+    resultados_gerais = []
+
     for arquivo in arquivos:
         st.subheader(f"Processando: {arquivo.name}")
         try:
             resultado = processar_em_chunks(arquivo, coluna_resposta)
-            st.write(resultado.columns)
 
             resultado = resultado[['NUMERO', 'MENSAGEM', 'VAR2', 'CLASSIFICACAO']]
             resultado.columns = ['contato', 'mensagem', 'cpf', 'classificacao']
@@ -91,16 +89,19 @@ if arquivos:
 
             if not resultado.empty:
                 st.success(f"Classificação finalizada para {arquivo.name}")
-                st.dataframe(resultado.head(20))
-
-                csv_resultado = resultado.to_csv(index=False, sep=';').encode("utf-8")
-                st.download_button(
-                    f"📥 Baixar classificações de {arquivo.name}",
-                    csv_resultado,
-                    file_name=f"{arquivo.name.split('.')[0]}_classificado.csv",
-                    mime="text/csv"
-                )
+                st.dataframe(resultado.head(5))
+                resultados_gerais.append(resultado)
             else:
                 st.warning(f"Nenhum dado válido encontrado em {arquivo.name}.")
         except Exception as e:
             st.error(f"Erro ao processar {arquivo.name}: {e}")
+
+    if resultados_gerais:
+        resultado_final = pd.concat(resultados_gerais, ignore_index=True)
+        csv_resultado = resultado_final.to_csv(index=False, sep=';').encode("utf-8")
+        st.download_button(
+            "📥 Baixar todas as classificações combinadas",
+            csv_resultado,
+            file_name="classificacoes_agregadas.csv",
+            mime="text/csv"
+        )
