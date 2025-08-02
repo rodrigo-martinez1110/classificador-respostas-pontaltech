@@ -4,6 +4,8 @@ import unicodedata
 import re
 import io
 
+st.set_option("server.maxUploadSize", 1024)
+
 palavras_nao_perturbe = [
     "nao me ligue", "nao quero receber", "me tira da lista", "descadastre", "vou processar", "perturb", 
     "enche o saco", "nao autorizo", "privacidade", "cancelar", "retire meu numero", 'nao me mand'
@@ -105,3 +107,4 @@ if arquivos:
             file_name="classificacoes_agregadas.csv",
             mime="text/csv"
         )
+
