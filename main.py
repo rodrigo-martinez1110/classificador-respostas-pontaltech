@@ -56,7 +56,7 @@ def processar_em_chunks(uploaded_file, coluna_resposta, chunk_size=100_000):
         chunk = chunk[chunk['STATUS'] == 'RESPONDIDO']
         if coluna_resposta in chunk.columns:
             chunk["CLASSIFICACAO"] = chunk[coluna_resposta].apply(classificar_resposta)
-            resultados.append(chunk[[coluna_resposta, "CLASSIFICACAO", 'VAR2', 'NUMERO']])
+            resultados.append(chunk[[coluna_resposta, "CLASSIFICACAO", 'VAR3', 'NUMERO']])
         total_linhas += len(chunk)
         contador_chunks += 1
         progresso.progress(min(contador_chunks * 0.1, 1.0))  # Estimativa simples
@@ -83,7 +83,7 @@ if arquivos:
         try:
             resultado = processar_em_chunks(arquivo, coluna_resposta)
 
-            resultado = resultado[['NUMERO', 'MENSAGEM', 'VAR2', 'CLASSIFICACAO']]
+            resultado = resultado[['NUMERO', 'MENSAGEM', 'VAR3', 'CLASSIFICACAO']]
             resultado.columns = ['contato', 'mensagem', 'cpf', 'classificacao']
             resultado = resultado[['cpf', 'classificacao', 'contato', 'mensagem']]
 
@@ -105,5 +105,6 @@ if arquivos:
             file_name="classificacoes_agregadas.csv",
             mime="text/csv"
         )
+
 
 
